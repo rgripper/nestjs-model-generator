@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "module": "commonjs",
+        "lib": ["esnext"]
+    }
+}

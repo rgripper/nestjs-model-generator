@@ -1,0 +1,106 @@
+{
+  "className": "CompanyController",
+  "methods": [
+    {
+      "name": "getCompany",
+      "returnTypeInfo": {
+        "text": "Company",
+        "name": "Company",
+        "properties": [
+          {
+            "name": "employees",
+            "typeInfo": {
+              "text": "Employee[]",
+              "name": "Employee[]",
+              "properties": [],
+              "arrayElementCustomTypeInfo": {
+                "text": "Employee",
+                "name": "Employee",
+                "properties": [
+                  {
+                    "name": "name",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "age",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "phoneNumbers",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "employmentType",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "hqAddress",
+            "typeInfo": {
+              "text": "Employee[]",
+              "name": "Employee[]",
+              "properties": [],
+              "arrayElementCustomTypeInfo": {
+                "text": "Employee",
+                "name": "Employee",
+                "properties": [
+                  {
+                    "name": "name",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "age",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "phoneNumbers",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  },
+                  {
+                    "name": "employmentType",
+                    "typeInfo": {
+                      "text": "string",
+                      "name": "string",
+                      "properties": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
