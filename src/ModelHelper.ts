@@ -12,7 +12,7 @@ type ReferencesInType = {
     properties: PropertyInfo[];
 }
 
-type TypeInfo = PartialTypeInfo & ReferencesInType;
+export type TypeInfo = PartialTypeInfo & ReferencesInType;
 
 type PropertyInfo = {
     name: string;
@@ -24,7 +24,7 @@ type ControllerPathMethod = {
     returnTypeInfo: TypeInfo 
 }
 
-type ControllerPaths = {
+export type ControllerPaths = {
     className: string;
     methods: ControllerPathMethod[];
 }
@@ -68,11 +68,10 @@ export function getAllInfos(glob: string) {
     }
 
     const typeInfoCache = createCache(getPartialTypeInfo, resolveReferencesInType);
-    const controllerInfos = sourceFiles.map(sf => getControllerInfos(sf, typeInfoCache.getOrAdd)).flat();
-    console.log()
-    // writeFileSync('types1.json', JSON.stringify(controllerInfos[0], undefined, '  '));
-    // writeFileSync('types2.json', JSON.stringify(controllerInfos[1], undefined, '  '));
-    console.log();
+    return {
+        controllerPaths: sourceFiles.map(sf => getControllerInfos(sf, typeInfoCache.getOrAdd)).flat(),
+        modelTypeInfos: typeInfoCache.getAllCached();
+    };
 }
 
 type GetTypeInfo = (node: Node) => TypeInfo
