@@ -1,6 +1,7 @@
 export interface Company {
     employees: Employee[]
-    hqAddress: Address
+    hqAddress: Address,
+    someField: { value: number }
 }
 
 interface Employee {

@@ -1,14 +1,13 @@
-import { Type, ts, Symbol, Node, Project, TypeFormatFlags, InterfaceDeclaration, TypeAliasDeclaration, SyntaxKind, TypeNode, SourceFile, ClassDeclaration, MethodDeclaration, TypeLiteralNode } from 'ts-morph';
-import { writeFileSync } from 'fs';
+import { Type, ts, Symbol, Node, Project, TypeFormatFlags, SourceFile, ClassDeclaration, MethodDeclaration } from 'ts-morph';
 
-type PartialTypeInfo = {
+export type PartialTypeInfo = {
     type: Type<ts.Type>;
-    name: string | undefined;
+    name: string;
     text: string;
 }
 
 type ReferencesInType = {
-    arrayElementCustomTypeInfo: PartialTypeInfo | undefined;
+    arrayElementCustomTypeInfo: TypeInfo | undefined;
     properties: PropertyInfo[];
 }
 
@@ -40,17 +39,15 @@ export function getAllInfos(glob: string) {
     project.addExistingSourceFiles(glob);
     
     const sourceFiles = project.getSourceFiles();
-
-    //const modelInfos = sourceFiles.map(getModelInfo);
     
     const createCache = (getPartialTypeInfo: GetPartialTypeInfo, resolveReferencesInType: ResolveReferencesInType) => {
         const typeInfoCache = new Map<string, TypeInfo>();
 
         const getOrAdd: GetTypeInfo = node => {
             const cacheKey = getNodeCacheKey(node);
-            console.log('get cache', cacheKey)
+            console.log('get cache', cacheKey);
             let typeInfo = typeInfoCache.get(cacheKey);
-            console.log('cache for', cacheKey, typeInfo === undefined)
+            console.log('cache for', cacheKey, typeInfo === undefined);
             if (typeInfo === undefined) {
                 typeInfo = getPartialTypeInfo(node) as TypeInfo;
                 console.log('set cache', cacheKey);
@@ -70,7 +67,7 @@ export function getAllInfos(glob: string) {
     const typeInfoCache = createCache(getPartialTypeInfo, resolveReferencesInType);
     return {
         controllerPaths: sourceFiles.map(sf => getControllerInfos(sf, typeInfoCache.getOrAdd)).flat(),
-        modelTypeInfos: typeInfoCache.getAllCached();
+        modelTypeInfos: typeInfoCache.getAllCached()
     };
 }
 
@@ -103,11 +100,6 @@ function isControllerClass(declaration: ClassDeclaration): boolean {
     return name !== undefined && name.endsWith('Controller');
 }
 
-function getElementType (type: Type<ts.Type>): Type<ts.Type> {
-    const elementType = type.getArrayElementTypeOrThrow();
-    return elementType.isArray() ? getElementType(elementType) : elementType;
-}
-
 function getNodeCacheKey(typeNode: Node) {
     return typeNode.getSourceFile().getFilePath() + ':' + typeNode.getType().getText(undefined, ts.TypeFormatFlags.None);
 }
@@ -121,7 +113,7 @@ function getPartialTypeInfo(typeNode: Node): PartialTypeInfo {
     return {
         type,
         text,
-        name: type.isAnonymous() ? undefined : text
+        name: type.isAnonymous() ? (type.compilerType.aliasSymbol ? text : 'TODO:anonymous') : text
     }
 }
 
@@ -129,8 +121,16 @@ type ResolveReferencesInType = typeof resolveReferencesInType;
 
 function resolveReferencesInType(type: Type<ts.Type>, getTypeInfo: GetTypeInfo): ReferencesInType {
     // not-yet-covered cases: Date, enum, union, generics
-    const elementType = type.isArray() ? getElementType(type) : undefined;
-    const arrayElementCustomTypeInfo = (elementType && elementType.isObject()) ? getTypeInfo(elementType.getSymbolOrThrow().getDeclarations()[0]) : undefined;
+    const elementType = type.isArray() ? type.getArrayElementTypeOrThrow() : undefined;
+    const isBuiltIn = elementType && !elementType.getSymbol() && !elementType.getAliasSymbol();
+    if (isBuiltIn) {
+        console.log();
+    }
+    const arrayElementCustomTypeInfo = elementType 
+        ? (isBuiltIn // TODO
+            ? { type: elementType, name: type.getText(undefined, TypeFormatFlags.None), text: type.getText(undefined, TypeFormatFlags.None), properties: [], arrayElementCustomTypeInfo: undefined }
+            : getTypeInfo(elementType.getSymbolOrThrow().getDeclarations()[0]))
+        : undefined;
 
     return {
         properties: (type.isObject() && !type.isArray()) ? type.getProperties().map(p => getPropertyInfo(p, getTypeInfo)) : [],
