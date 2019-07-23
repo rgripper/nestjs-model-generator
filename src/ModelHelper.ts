@@ -1,4 +1,6 @@
 import { Type, ts, Symbol, Node, Project, TypeFormatFlags, SourceFile, ClassDeclaration, MethodDeclaration } from 'ts-morph';
+import crypto from 'crypto';
+const hash = crypto.createHash('sha256');
 
 export type PartialTypeInfo = {
     type: Type<ts.Type>;
@@ -45,12 +47,9 @@ export function getAllInfos(glob: string) {
 
         const getOrAdd: GetTypeInfo = node => {
             const cacheKey = getNodeCacheKey(node);
-            console.log('get cache', cacheKey);
             let typeInfo = typeInfoCache.get(cacheKey);
-            console.log('cache for', cacheKey, typeInfo === undefined);
             if (typeInfo === undefined) {
                 typeInfo = getPartialTypeInfo(node) as TypeInfo;
-                console.log('set cache', cacheKey);
                 typeInfoCache.set(cacheKey, typeInfo);
                 const resolvedReferences = resolveReferencesInType(typeInfo.type, getOrAdd);
                 Object.assign(typeInfo, resolvedReferences)
@@ -113,7 +112,7 @@ function getPartialTypeInfo(typeNode: Node): PartialTypeInfo {
     return {
         type,
         text,
-        name: type.isAnonymous() ? (type.compilerType.aliasSymbol ? text : 'TODO:anonymous') : text
+        name: (type.isAnonymous() && !type.compilerType.aliasSymbol) ? generateAnonymousTypeName(type) : text
     }
 }
 
@@ -136,6 +135,10 @@ function resolveReferencesInType(type: Type<ts.Type>, getTypeInfo: GetTypeInfo):
         properties: (type.isObject() && !type.isArray()) ? type.getProperties().map(p => getPropertyInfo(p, getTypeInfo)) : [],
         arrayElementCustomTypeInfo
     }
+}
+
+function generateAnonymousTypeName(type: Type<ts.Type>) {
+    return 'Anonynous_' + hash.update(type.getText(undefined, TypeFormatFlags.None)).digest('hex');
 }
 
 function getPropertyInfo(property: Symbol, getTypeInfo: GetTypeInfo): PropertyInfo {

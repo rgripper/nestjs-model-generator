@@ -29,7 +29,8 @@ function createModelModuleImport(typeInfo: PartialTypeInfo): Import {
 }
 
 export function isModelType(typeInfo: TypeInfo) {
-    return typeInfo.type.isObject() && !typeInfo.type.isArray();
+    console.log(typeInfo.name, 'typeInfo.type.isObject()', typeInfo.type.isObject())
+    return typeInfo.type.isEnum() || (typeInfo.type.isObject() && !typeInfo.type.isArray());
 }
 
 export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {

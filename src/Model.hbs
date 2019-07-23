@@ -1,9 +1,8 @@
 {{#each imports}}
 import { {{name}} } from '{{path}}';
 {{/each}}
-
 export class {{name}} {
 {{#each properties}}
-    {{name}}: {{typeInfo.text}};
+    {{name}}: {{typeInfo.name}};
 {{/each}}
 }
