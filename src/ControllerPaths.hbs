@@ -1,0 +1,15 @@
+{{#each imports}}
+import { {{name}} } from '{{path}}';
+{{/each}}
+
+const controllers = {
+    {{#each controllers}}
+    {{name}}: {
+        {{#each methods}}
+        {{name}}: {
+            returnType: {{returnTypeInfo.name}}
+        },
+        {{/each}}
+    },
+    {{/each}}
+}

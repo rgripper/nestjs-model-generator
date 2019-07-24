@@ -20,14 +20,14 @@ type PropertyInfo = {
     typeInfo: TypeInfo;
 }
 
-type ControllerPathMethod = { 
+type RouteMethod = { 
     name: string
     returnTypeInfo: TypeInfo 
 }
 
-export type ControllerPaths = {
-    className: string;
-    methods: ControllerPathMethod[];
+export type RouteController = {
+    name: string;
+    methods: RouteMethod[];
 }
 
 export function getAllInfos(glob: string) {
@@ -72,20 +72,20 @@ export function getAllInfos(glob: string) {
 
 type GetTypeInfo = (node: Node) => TypeInfo
 
-function getControllerInfos(sourceFile: SourceFile, getTypeInfo: GetTypeInfo): ControllerPaths[] {
+function getControllerInfos(sourceFile: SourceFile, getTypeInfo: GetTypeInfo): RouteController[] {
     return sourceFile.getClasses().filter(isControllerClass).map(x => createControllerInfo(x, getTypeInfo));
 }
 
-function createControllerInfo(classDeclaration: ClassDeclaration, getTypeInfo: GetTypeInfo): ControllerPaths {
+function createControllerInfo(classDeclaration: ClassDeclaration, getTypeInfo: GetTypeInfo): RouteController {
     const methods = classDeclaration.getMethods();
     const pathMethods = methods.map(x => createControllerPathMethod(x, getTypeInfo));
     return {
-        className: classDeclaration.getNameOrThrow(),
+        name: classDeclaration.getNameOrThrow(),
         methods: pathMethods
     }
 }
 
-function createControllerPathMethod(methodDeclaration: MethodDeclaration, getTypeInfo: GetTypeInfo): ControllerPathMethod {
+function createControllerPathMethod(methodDeclaration: MethodDeclaration, getTypeInfo: GetTypeInfo): RouteMethod {
     const returnType = methodDeclaration.getReturnTypeNodeOrThrow();
 
     return {

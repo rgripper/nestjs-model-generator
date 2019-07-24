@@ -1,4 +1,4 @@
-import { TypeInfo, ControllerPaths, getAllInfos, PartialTypeInfo } from "./ModelHelper";
+import { TypeInfo, RouteController, getAllInfos, PartialTypeInfo } from "./ModelHelper";
 import Handlebars from 'handlebars';
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
 
@@ -14,16 +14,27 @@ async function generateModelFile(typeInfo: TypeInfo) {
     const template = Handlebars.compile(readFileSync('src/Model.hbs').toString());
     const content = template({
         ...typeInfo,
-        imports: createImports(typeInfo)
+        imports: createImports('.', typeInfo)
     });
 
     mkdirSync(modelsDir, { recursive: true });
     writeFileSync(modelsDir + '/' + typeInfo.name + '.ts', content);
 }
 
-function createModelModuleImport(typeInfo: PartialTypeInfo): Import {
+function generateControllerPathsFile(routeControllers: RouteController[]) {
+    const template = Handlebars.compile(readFileSync('src/ControllerPaths.hbs').toString());
+    const content = template({
+        controllers: routeControllers,
+        imports: routeControllers.map(x => x.methods.map(m => m.returnTypeInfo)).flat().map(p => createModelModuleImport('./models', p))
+    });
+
+    mkdirSync(modelsDir, { recursive: true });
+    writeFileSync('generated/paths.ts', content);
+}
+
+function createModelModuleImport(basePath: string, typeInfo: PartialTypeInfo): Import {
     return {
-        path: `./${typeInfo.name}`,
+        path: basePath + `/${typeInfo.name}`,
         name: typeInfo.name
     };
 }
@@ -35,14 +46,13 @@ export function isModelType(typeInfo: TypeInfo) {
 
 export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {
     crispName.modelTypeInfos.filter(isModelType).forEach(generateModelFile);
-    //generateModelsIndexFile(crispName.modelTypeInfos);
     generateControllerPathsFile(crispName.controllerPaths);
 }
 
-export function createImports(typeInfo: TypeInfo): Import[] {
+export function createImports(basePath: string, typeInfo: TypeInfo): Import[] {
     const typeInfos: Import[] = [];
     if (typeInfo.arrayElementCustomTypeInfo) {
-        typeInfos.push(createModelModuleImport(typeInfo.arrayElementCustomTypeInfo)) 
+        typeInfos.push(createModelModuleImport(basePath, typeInfo.arrayElementCustomTypeInfo)) 
     }
 
     const unwrapIfArray = (typeInfo: TypeInfo): TypeInfo => typeInfo.arrayElementCustomTypeInfo ? unwrapIfArray(typeInfo.arrayElementCustomTypeInfo) : typeInfo;
@@ -51,17 +61,9 @@ export function createImports(typeInfo: TypeInfo): Import[] {
         propTypeInfos.push(typeInfo.arrayElementCustomTypeInfo);
     }
 
-    const imports = propTypeInfos.map(unwrapIfArray).filter(isModelType).map(createModelModuleImport); // arrays!
+    const imports = propTypeInfos.map(unwrapIfArray).filter(isModelType).map(p => createModelModuleImport(basePath, p)); // arrays!
     console.log(typeInfo.name, propTypeInfos.map(unwrapIfArray).map(x => x.name), propTypeInfos.map(unwrapIfArray).map(x => x.arrayElementCustomTypeInfo !== undefined));
 
     return imports;
 }
 
-// function generateModelsIndexFile(typeInfos: TypeInfo[]) {
-//     // generates export
-//     await writeFileSync('denerated/models/' + typeInfos.name + '.ts', content);
-// }
-
-function generateControllerPathsFile(controllerPaths: ControllerPaths[]) {
-    
-}
