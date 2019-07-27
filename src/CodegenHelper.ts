@@ -2,18 +2,28 @@ import { TypeInfo, RouteController, getAllInfos, PartialTypeInfo } from "./Model
 import Handlebars from 'handlebars';
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
 
-const modelsDir = 'generated/models';
+const generatedDirectory = 'test/generated';
+
+const modelsDir = generatedDirectory + '/models';
+const routeInterceptorPath = generatedDirectory + '/RouteInterceptor.ts';
 
 type Import = {
     path: string;
     name: string;
 }
 
+export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {
+    crispName.modelTypeInfos.filter(isModelType).forEach(generateModelFile);
+    generateControllerPathsFile(crispName.routeControllers);
+}
+
+
 async function generateModelFile(typeInfo: TypeInfo) {
     // model with references to other models
     const template = Handlebars.compile(readFileSync('src/Model.hbs').toString());
     const content = template({
         ...typeInfo,
+        properties: typeInfo.properties.map(p => ({ ...p, isModelType: isModelType(p.typeInfo)})),
         imports: createImports('.', typeInfo)
     });
 
@@ -22,14 +32,14 @@ async function generateModelFile(typeInfo: TypeInfo) {
 }
 
 function generateControllerPathsFile(routeControllers: RouteController[]) {
-    const template = Handlebars.compile(readFileSync('src/ControllerPaths.hbs').toString());
+    const template = Handlebars.compile(readFileSync('src/RouteInterceptor.hbs').toString());
     const content = template({
         controllers: routeControllers,
         imports: routeControllers.map(x => x.methods.map(m => m.returnTypeInfo)).flat().map(p => createModelModuleImport('./models', p))
     });
 
     mkdirSync(modelsDir, { recursive: true });
-    writeFileSync('generated/paths.ts', content);
+    writeFileSync(routeInterceptorPath, content);
 }
 
 function createModelModuleImport(basePath: string, typeInfo: PartialTypeInfo): Import {
@@ -39,17 +49,11 @@ function createModelModuleImport(basePath: string, typeInfo: PartialTypeInfo): I
     };
 }
 
-export function isModelType(typeInfo: TypeInfo) {
-    console.log(typeInfo.name, 'typeInfo.type.isObject()', typeInfo.type.isObject())
+function isModelType(typeInfo: TypeInfo) {
     return typeInfo.type.isEnum() || (typeInfo.type.isObject() && !typeInfo.type.isArray());
 }
 
-export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {
-    crispName.modelTypeInfos.filter(isModelType).forEach(generateModelFile);
-    generateControllerPathsFile(crispName.controllerPaths);
-}
-
-export function createImports(basePath: string, typeInfo: TypeInfo): Import[] {
+function createImports(basePath: string, typeInfo: TypeInfo): Import[] {
     const typeInfos: Import[] = [];
     if (typeInfo.arrayElementCustomTypeInfo) {
         typeInfos.push(createModelModuleImport(basePath, typeInfo.arrayElementCustomTypeInfo)) 

@@ -65,7 +65,7 @@ export function getAllInfos(glob: string) {
 
     const typeInfoCache = createCache(getPartialTypeInfo, resolveReferencesInType);
     return {
-        controllerPaths: sourceFiles.map(sf => getControllerInfos(sf, typeInfoCache.getOrAdd)).flat(),
+        routeControllers: sourceFiles.map(sf => getControllerInfos(sf, typeInfoCache.getOrAdd)).flat(),
         modelTypeInfos: typeInfoCache.getAllCached()
     };
 }

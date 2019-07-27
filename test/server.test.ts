@@ -1,14 +1,16 @@
 import request from "supertest";
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app";
+import { AppModule } from "./samples/app";
+import { RouteInterceptor } from "./generated/RouteInterceptor";
 
 describe("generated interceptor", () => {
     it("intercepts requests and returnes mapped instances of generated model classes", async () => {
-        const app = await NestFactory.create(AppModule)
+        const app = await NestFactory.create(AppModule);
+        app.useGlobalInterceptors(new RouteInterceptor());
+
         request(app.getHttpServer())
-            .get('/user')
+            .get('/app')
             .expect('Content-Type', /json/)
-            .expect('Content-Length', '15')
             .expect(200)
             .end(function(err, res) {
                 if (err) throw err;
