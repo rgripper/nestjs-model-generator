@@ -1,12 +1,15 @@
 import { Company } from "./testModel";
 import { RecursiveModel } from "./testRecursiveModel";
 import { Controller, Get } from "@nestjs/common";
+import { Address } from "../generated/models/Address";
 
-@Controller('companies')
-export class CompanyController {
+@Controller('addresses')
+export class AddressController {
     @Get()
-    getCompany(id: string): Company {
-        return null as any;
+    getAddress(id: string): Address {
+        return {
+            countryCode: 'Haha'
+        };
     }
 }
 

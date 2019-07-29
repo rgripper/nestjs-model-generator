@@ -1,13 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CompanyController, RecursiveModelController } from './testControllers';
-
-type Answer = {
-  text: string;
-}
+import { AddressController, RecursiveModelController } from './testControllers';
 
 @Module({
   imports: [],
-  controllers: [CompanyController, RecursiveModelController],
+  controllers: [AddressController, RecursiveModelController],
   providers: [],
 })
 export class AppModule {}

@@ -9,7 +9,7 @@ describe("generated interceptor", () => {
         app.useGlobalInterceptors(new RouteInterceptor());
 
         request(app.getHttpServer())
-            .get('/app')
+            .get('/addresses')
             .expect('Content-Type', /json/)
             .expect(200)
             .end(function(err, res) {

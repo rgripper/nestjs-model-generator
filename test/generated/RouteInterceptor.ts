@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { Company } from './models/Company';
+import { Address } from './models/Address';
 import { RecursiveModel } from './models/RecursiveModel';
 
 type RouteControllers = {
@@ -13,9 +13,9 @@ type RouteControllers = {
 }
 
 const controllers: RouteControllers = {
-    CompanyController: {
-        getCompany: {
-            returnType: Company
+    AddressController: {
+        getAddress: {
+            returnType: Address
         },
     },
     RecursiveModelController: {

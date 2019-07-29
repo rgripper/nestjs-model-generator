@@ -1,6 +1,7 @@
-import { TypeInfo, RouteController, getAllInfos, PartialTypeInfo } from "./ModelHelper";
+import { ControllerInfo, getAllInfos } from "./ModelHelper";
 import Handlebars from 'handlebars';
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
+import { TypeInfo } from "./TypeInfo";
 
 const generatedDirectory = 'test/generated';
 
@@ -13,7 +14,7 @@ type Import = {
 }
 
 export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {
-    crispName.modelTypeInfos.filter(isModelType).forEach(generateModelFile);
+    crispName.typeInfos.filter(isModelType).forEach(generateModelFile);
     generateControllerPathsFile(crispName.routeControllers);
 }
 
@@ -31,7 +32,7 @@ async function generateModelFile(typeInfo: TypeInfo) {
     writeFileSync(modelsDir + '/' + typeInfo.name + '.ts', content);
 }
 
-function generateControllerPathsFile(routeControllers: RouteController[]) {
+function generateControllerPathsFile(routeControllers: ControllerInfo[]) {
     const template = Handlebars.compile(readFileSync('src/RouteInterceptor.hbs').toString());
     const content = template({
         controllers: routeControllers,
@@ -42,7 +43,7 @@ function generateControllerPathsFile(routeControllers: RouteController[]) {
     writeFileSync(routeInterceptorPath, content);
 }
 
-function createModelModuleImport(basePath: string, typeInfo: PartialTypeInfo): Import {
+function createModelModuleImport(basePath: string, typeInfo: TypeInfo): Import {
     return {
         path: basePath + `/${typeInfo.name}`,
         name: typeInfo.name
@@ -55,18 +56,18 @@ function isModelType(typeInfo: TypeInfo) {
 
 function createImports(basePath: string, typeInfo: TypeInfo): Import[] {
     const typeInfos: Import[] = [];
-    if (typeInfo.arrayElementCustomTypeInfo) {
-        typeInfos.push(createModelModuleImport(basePath, typeInfo.arrayElementCustomTypeInfo)) 
+    if (typeInfo.arrayElementTypeInfo) {
+        typeInfos.push(createModelModuleImport(basePath, typeInfo.arrayElementTypeInfo)) 
     }
 
-    const unwrapIfArray = (typeInfo: TypeInfo): TypeInfo => typeInfo.arrayElementCustomTypeInfo ? unwrapIfArray(typeInfo.arrayElementCustomTypeInfo) : typeInfo;
+    const unwrapIfArray = (typeInfo: TypeInfo): TypeInfo => typeInfo.arrayElementTypeInfo ? unwrapIfArray(typeInfo.arrayElementTypeInfo) : typeInfo;
     const propTypeInfos = typeInfo.properties.map(x => x.typeInfo);
-    if (typeInfo.arrayElementCustomTypeInfo) {
-        propTypeInfos.push(typeInfo.arrayElementCustomTypeInfo);
+    if (typeInfo.arrayElementTypeInfo) {
+        propTypeInfos.push(typeInfo.arrayElementTypeInfo);
     }
 
     const imports = propTypeInfos.map(unwrapIfArray).filter(isModelType).map(p => createModelModuleImport(basePath, p)); // arrays!
-    console.log(typeInfo.name, propTypeInfos.map(unwrapIfArray).map(x => x.name), propTypeInfos.map(unwrapIfArray).map(x => x.arrayElementCustomTypeInfo !== undefined));
+    console.log(typeInfo.name, propTypeInfos.map(unwrapIfArray).map(x => x.name), propTypeInfos.map(unwrapIfArray).map(x => x.arrayElementTypeInfo !== undefined));
 
     return imports;
 }
