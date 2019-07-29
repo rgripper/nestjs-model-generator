@@ -1,27 +1,26 @@
-import { ts, Node, Type } from 'ts-morph';
-import { TypeInfo, GetTypeInfoFromNode, getTypeHead, resolveReferencesInType, TypeHead, ReferencesInType } from './TypeInfo';
+import { ts, Node } from 'ts-morph';
+import { TypeInfo, GetTypeInfoFromNode, createTypeInfoFromNode } from './TypeInfo';
 
 export function createCache () {
-    return createCacheWithParams({ getTypeHead, getKey, resolveReferencesInType });
+    return createCacheWithParams({ getKey, createTypeInfoFromNode });
 }
 
 type CacheParams = { 
-    getTypeHead: (node: Node) => TypeHead; 
     getKey: (typeNode: Node) => string;
-    resolveReferencesInType: (type: Type, getTypeInfo: GetTypeInfoFromNode) => ReferencesInType; 
+    createTypeInfoFromNode: (typeNode: Node, getTypeInfoFromNode: GetTypeInfoFromNode) => TypeInfo; 
 };
 
-function createCacheWithParams ({ getTypeHead, getKey, resolveReferencesInType }: CacheParams) {
+function createCacheWithParams ({ getKey, createTypeInfoFromNode }: CacheParams) {
     const cache = new Map<string, TypeInfo>();
 
     const getOrAdd = (node: Node) => {
         const key = getKey(node);
         let typeInfo = cache.get(key);
         if (typeInfo === undefined) {
-            typeInfo = getTypeHead(node) as TypeInfo;
+            typeInfo = {} as TypeInfo;
             cache.set(key, typeInfo);
-            const resolvedReferences = resolveReferencesInType(typeInfo.type, getOrAdd);
-            Object.assign(typeInfo, resolvedReferences);
+            const fullTypeInfo = createTypeInfoFromNode(node, getOrAdd);
+            Object.assign(typeInfo, fullTypeInfo);
         }
         return typeInfo;
     }

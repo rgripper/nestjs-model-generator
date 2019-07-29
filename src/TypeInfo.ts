@@ -1,14 +1,9 @@
-import { Type, ts, Symbol, Node, TypeFormatFlags } from 'ts-morph';
+import { Type, Symbol, Node, TypeFormatFlags } from 'ts-morph';
 import { isBuiltInType, getTypeName } from './TypeHelper';
 
-export type TypeInfo = TypeHead & ReferencesInType;
-
-export type TypeHead = {
+export type TypeInfo = {
     type: Type;
     name: string;
-}
-
-export type ReferencesInType = {
     arrayElementTypeInfo: TypeInfo | undefined;
     properties: PropertyInfo[];
 }
@@ -19,22 +14,17 @@ export type PropertyInfo = {
 }
 
 export type GetTypeInfoFromNode = (node: Node) => TypeInfo;
+export type CreateTypeInfoFromNode = (node: Node, getTypeInfoFromNode: GetTypeInfoFromNode) => TypeInfo;
 
-export function getTypeHead(typeNode: Node): TypeHead {
+export function createTypeInfoFromNode(typeNode: Node, getTypeInfoFromNode: GetTypeInfoFromNode): TypeInfo {
     // not-covered cases: enum, union, generic
     const type = typeNode.getType();
     return {
         type,
-        name: getTypeName(type)
-    }
-}
-
-export function resolveReferencesInType(type: Type, getTypeInfoFromNode: GetTypeInfoFromNode): ReferencesInType {
-    // not-yet-covered cases: Date, enum, union, generics
-    return {
+        name: getTypeName(type),
         properties: isBuiltInType(type) ? [] : type.getProperties().map(p => getPropertyInfo(p, getTypeInfoFromNode)),
         arrayElementTypeInfo: type.isArray() ? createArrayElementTypeInfo(type, getTypeInfoFromNode) : undefined
-    };
+    }
 }
 
 function getPropertyInfo(property: Symbol, getTypeInfoFromNode: GetTypeInfoFromNode): PropertyInfo {
