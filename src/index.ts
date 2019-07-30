@@ -1,6 +1,6 @@
-import { getAllInfos } from "./ModelHelper";
+import { getControllersAndModels } from "./ProjectHelper";
 import { generateEverything } from "./CodegenHelper";
 
-const infos = getAllInfos("test/samples/*.ts");
+const infos = getControllersAndModels("test/samples/*.ts");
 
 generateEverything(infos);

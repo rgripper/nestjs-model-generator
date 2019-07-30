@@ -3,17 +3,17 @@ import { {{name}} } from '{{path}}';
 {{/each}}
 export class {{name}} {
 
+{{#each properties}}
+    {{name}}!: {{model.name}};
+{{/each}}
+
     constructor(raw: {{name}}) {
 {{#each properties}}
-    {{#if isModelType}}
-        this.{{name}} = new {{typeInfo.name}}(raw.{{name}});
+    {{#if isClassModel}}
+        this.{{name}} = new {{model.name}}(raw.{{name}});
     {{else}}
         this.{{name}} = raw.{{name}};
     {{/if}}
 {{/each}}
     }
-
-{{#each properties}}
-    {{name}}!: {{typeInfo.name}};
-{{/each}}
 }

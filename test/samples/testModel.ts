@@ -11,11 +11,15 @@ interface Employee {
     employmentType: EmploymentType
 }
 
-type Address = {
+export type Question = {
+    text: string;
+}
+
+export type Address = {
     countryCode: CountryCode
 }
 
-enum CountryCode { Australia, Denmark, Croatia }
+export enum CountryCode { Australia, Denmark, Croatia }
 
 type EmploymentType = 'Permanent' | 'Contractor'
 

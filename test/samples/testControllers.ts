@@ -1,14 +1,14 @@
-import { Company } from "./testModel";
+import { Company, Address, CountryCode, Question } from "./testModel";
 import { RecursiveModel } from "./testRecursiveModel";
 import { Controller, Get } from "@nestjs/common";
-import { Address } from "../generated/models/Address";
 
-@Controller('addresses')
-export class AddressController {
+
+@Controller('questions')
+export class QuestionController {
     @Get()
-    getAddress(id: string): Address {
+    getAddress(id: string): Question {
         return {
-            countryCode: 'Haha'
+            text: 'Name your favourite can opener brand'
         };
     }
 }

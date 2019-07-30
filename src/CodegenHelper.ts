@@ -1,7 +1,7 @@
-import { ControllerInfo, getAllInfos } from "./ModelHelper";
+import { Controller, getControllersAndModels } from "./ProjectHelper";
 import Handlebars from 'handlebars';
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
-import { TypeInfo } from "./TypeInfo";
+import { Model } from "./Model";
 
 const generatedDirectory = 'test/generated';
 
@@ -13,61 +13,61 @@ type Import = {
     name: string;
 }
 
-export function generateEverything(crispName: ReturnType<typeof getAllInfos>) {
-    crispName.typeInfos.filter(isModelType).forEach(generateModelFile);
-    generateControllerPathsFile(crispName.routeControllers);
+export function generateEverything(crispName: ReturnType<typeof getControllersAndModels>) {
+    crispName.models.filter(isClassModel).forEach(generateModelFile);
+    generateControllerPathsFile(crispName.controllers);
 }
 
 
-async function generateModelFile(typeInfo: TypeInfo) {
+async function generateModelFile(model: Model) {
     // model with references to other models
     const template = Handlebars.compile(readFileSync('src/Model.hbs').toString());
     const content = template({
-        ...typeInfo,
-        properties: typeInfo.properties.map(p => ({ ...p, isModelType: isModelType(p.typeInfo)})),
-        imports: createImports('.', typeInfo)
+        ...model,
+        properties: model.properties.map(p => ({ ...p, isClassModel: isClassModel(p.model)})),
+        imports: createImports('.', model)
     });
 
     mkdirSync(modelsDir, { recursive: true });
-    writeFileSync(modelsDir + '/' + typeInfo.name + '.ts', content);
+    writeFileSync(modelsDir + '/' + model.name + '.ts', content);
 }
 
-function generateControllerPathsFile(routeControllers: ControllerInfo[]) {
+function generateControllerPathsFile(routeControllers: Controller[]) {
     const template = Handlebars.compile(readFileSync('src/RouteInterceptor.hbs').toString());
     const content = template({
         controllers: routeControllers,
-        imports: routeControllers.map(x => x.methods.map(m => m.returnTypeInfo)).flat().map(p => createModelModuleImport('./models', p))
+        imports: routeControllers.map(x => x.methods.map(m => m.returnModel)).flat().map(p => createModelModuleImport('./models', p))
     });
 
     mkdirSync(modelsDir, { recursive: true });
     writeFileSync(routeInterceptorPath, content);
 }
 
-function createModelModuleImport(basePath: string, typeInfo: TypeInfo): Import {
+function createModelModuleImport(basePath: string, model: Model): Import {
     return {
-        path: basePath + `/${typeInfo.name}`,
-        name: typeInfo.name
+        path: basePath + `/${model.name}`,
+        name: model.name
     };
 }
 
-function isModelType(typeInfo: TypeInfo) {
-    return typeInfo.type.isEnum() || (typeInfo.type.isObject() && !typeInfo.type.isArray());
+function isClassModel(model: Model) {
+    return model.type.isEnum() || (model.type.isObject() && !model.type.isArray());
 }
 
-function createImports(basePath: string, typeInfo: TypeInfo): Import[] {
-    const typeInfos: Import[] = [];
-    if (typeInfo.arrayElementTypeInfo) {
-        typeInfos.push(createModelModuleImport(basePath, typeInfo.arrayElementTypeInfo)) 
+function createImports(basePath: string, model: Model): Import[] {
+    const models: Import[] = [];
+    if (model.arrayElementModel) {
+        models.push(createModelModuleImport(basePath, model.arrayElementModel)) 
     }
 
-    const unwrapIfArray = (typeInfo: TypeInfo): TypeInfo => typeInfo.arrayElementTypeInfo ? unwrapIfArray(typeInfo.arrayElementTypeInfo) : typeInfo;
-    const propTypeInfos = typeInfo.properties.map(x => x.typeInfo);
-    if (typeInfo.arrayElementTypeInfo) {
-        propTypeInfos.push(typeInfo.arrayElementTypeInfo);
+    const unwrapIfArray = (model: Model): Model => model.arrayElementModel ? unwrapIfArray(model.arrayElementModel) : model;
+    const propModels = model.properties.map(x => x.model);
+    if (model.arrayElementModel) {
+        propModels.push(model.arrayElementModel);
     }
 
-    const imports = propTypeInfos.map(unwrapIfArray).filter(isModelType).map(p => createModelModuleImport(basePath, p)); // arrays!
-    console.log(typeInfo.name, propTypeInfos.map(unwrapIfArray).map(x => x.name), propTypeInfos.map(unwrapIfArray).map(x => x.arrayElementTypeInfo !== undefined));
+    const imports = propModels.map(unwrapIfArray).filter(isClassModel).map(p => createModelModuleImport(basePath, p)); // arrays!
+    console.log(model.name, propModels.map(unwrapIfArray).map(x => x.name), propModels.map(unwrapIfArray).map(x => x.arrayElementModel !== undefined));
 
     return imports;
 }

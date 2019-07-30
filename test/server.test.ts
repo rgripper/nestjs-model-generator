@@ -8,7 +8,7 @@ describe("generated interceptor", () => {
         const app = await NestFactory.create(AppModule);
         app.useGlobalInterceptors(new RouteInterceptor());
         request(app.getHttpServer())
-            .get('/addresses')
+            .get('/questions')
             //.expect('Content-Type', /json/)
             //.expect({ text: 'hello' })
             .expect(200)
