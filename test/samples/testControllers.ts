@@ -13,9 +13,9 @@ export class QuestionController {
     }
 }
 
-@Controller()
-export class RecursiveModelController {
-    getRecursiveModel(id: string): RecursiveModel {
-        return null as any;
-    }
-}
+// @Controller()
+// export class RecursiveModelController {
+//     getRecursiveModel(id: string): RecursiveModel {
+//         return null as any;
+//     }
+// }

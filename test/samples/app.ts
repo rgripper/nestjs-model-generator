@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { QuestionController, RecursiveModelController } from './testControllers';
+import { QuestionController } from './testControllers';
 
 @Module({
   imports: [],
-  controllers: [QuestionController, RecursiveModelController],
+  controllers: [QuestionController],
   providers: [],
 })
 export class AppModule {}
