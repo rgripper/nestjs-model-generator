@@ -17,6 +17,7 @@ function createModelGraphWithParams ({ getKey, createValue }: ModelGraphParams) 
         const key = getKey(node);
         let model = cache.get(key);
         if (model === undefined) {
+            // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
             model = {} as Model;
             cache.set(key, model);
             const fullModel = createValue(node, getOrAdd);

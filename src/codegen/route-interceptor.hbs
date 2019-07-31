@@ -8,7 +8,7 @@ import { {{name}} } from '{{path}}';
 type Controllers = {
   [name: string]: { 
     [name: string]: {
-      returnType: any;
+      returnType: unknown;
     }
   }
 }
@@ -27,7 +27,7 @@ const controllers: Controllers = {
 
 @Injectable()
 export class RouteInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const method = controllers[context.getClass().name][context.getHandler().name];
     console.log(method);
     return next

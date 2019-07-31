@@ -4,10 +4,10 @@ import { {{name}} } from '{{path}}';
 export class {{name}} {
 
 {{#each properties}}
-    {{name}}!: {{model.name}};
+    public {{name}}!: {{model.name}};
 {{/each}}
 
-    constructor(raw: {{name}}) {
+    public constructor(raw: {{name}}) {
 {{#each properties}}
     {{#if isClassModel}}
         this.{{name}} = new {{model.name}}(raw.{{name}});

@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint --fix {src,test}/**/*.ts",
     "generate": "ts-node src/index.ts",
     "start": "ts-node test/main.ts",
     "test": "jest",
@@ -26,12 +27,22 @@
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
     "eslint": "^6.1.0",
+    "husky": "^3.0.2",
     "jest": "^24.8.0",
+    "lint-staged": "^9.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": "eslint --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }

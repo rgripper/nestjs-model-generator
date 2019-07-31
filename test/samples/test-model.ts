@@ -1,14 +1,14 @@
 export interface Company {
-    employees: Employee[]
-    hqAddress: Address,
-    someField: { value: number }
+    employees: Employee[];
+    hqAddress: Address;
+    someField: { value: number };
 }
 
 interface Employee {
-    name: string
-    age: number
-    phoneNumbers: string[]
-    employmentType: EmploymentType
+    name: string;
+    age: number;
+    phoneNumbers: string[];
+    employmentType: EmploymentType;
 }
 
 export type Question = {
@@ -16,7 +16,7 @@ export type Question = {
 }
 
 export type Address = {
-    countryCode: CountryCode
+    countryCode: CountryCode;
 }
 
 export enum CountryCode { Australia, Denmark, Croatia }

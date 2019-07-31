@@ -5,8 +5,8 @@ import { Model, GetModelFromNode } from './model'
 const modelGraph = createModelGraph();
 
 type Method = { 
-    name: string
-    returnModel: Model 
+    name: string;
+    returnModel: Model; 
 }
 
 export type Controller = {

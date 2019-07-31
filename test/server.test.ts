@@ -10,14 +10,14 @@ describe("generated interceptor", () => {
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-          imports: [AppModule],
+            imports: [AppModule],
         })
-          .compile();
+            .compile();
     
         app = module.createNestApplication();
         app.useGlobalInterceptors(new RouteInterceptor());
         await app.init();
-      });
+    });
 
     it("intercepts requests and returnes mapped instances of generated model classes", async () => {
         

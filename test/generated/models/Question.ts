@@ -1,8 +1,8 @@
 export class Question {
 
-    text!: string;
+    public text!: string;
 
-    constructor(raw: Question) {
+    public constructor(raw: Question) {
         this.text = raw.text;
     }
 }

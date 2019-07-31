@@ -1,4 +1,4 @@
-import { Type, Symbol, Node, TypeFormatFlags } from 'ts-morph';
+import { Type, Symbol as SymbolWrapper, Node, TypeFormatFlags } from 'ts-morph';
 import { isBuiltInType, getTypeName } from './type-helper';
 
 export type Model = {
@@ -27,7 +27,7 @@ export function createModelFromNode(typeNode: Node, getModelFromNode: GetModelFr
     }
 }
 
-function createProperty(propertySymbol: Symbol, getModelFromNode: GetModelFromNode): Property {
+function createProperty(propertySymbol: SymbolWrapper, getModelFromNode: GetModelFromNode): Property {
     return {
         name: propertySymbol.getName(),
         model: getModelFromNode(propertySymbol.getValueDeclarationOrThrow())
@@ -38,8 +38,8 @@ function createArrayElementModel (type: Type, getModelFromNode: GetModelFromNode
     const elementType = type.getArrayElementTypeOrThrow();
 
     return isBuiltInType(elementType)
-            ? createBuiltInModel(elementType)
-            : getModelFromNode(elementType.getSymbolOrThrow().getDeclarations()[0])
+        ? createBuiltInModel(elementType)
+        : getModelFromNode(elementType.getSymbolOrThrow().getDeclarations()[0])
 }
 
 function createBuiltInModel(type: Type): Model {
