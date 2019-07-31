@@ -1,5 +1,5 @@
 import { Type, Symbol, Node, TypeFormatFlags } from 'ts-morph';
-import { isBuiltInType, getTypeName } from './TypeHelper';
+import { isBuiltInType, getTypeName } from './type-helper';
 
 export type Model = {
     type: Type;

@@ -1,5 +1,5 @@
 import { ts, Node } from 'ts-morph';
-import { Model, GetModelFromNode, createModelFromNode } from './Model';
+import { Model, GetModelFromNode, createModelFromNode } from './model';
 
 export function createModelGraph () {
     return createModelGraphWithParams({ getKey, createValue: createModelFromNode });

@@ -1,12 +1,12 @@
-import { Controller, getControllersAndModels } from "./ProjectHelper";
+import { Controller, getControllersAndModels } from "../analyzer/project-helper";
 import Handlebars from 'handlebars';
 import { writeFileSync, mkdirSync, readFileSync } from "fs";
-import { Model } from "./Model";
+import { Model } from "../analyzer/model";
 
 const generatedDirectory = 'test/generated';
 
 const modelsDir = generatedDirectory + '/models';
-const routeInterceptorPath = generatedDirectory + '/RouteInterceptor.ts';
+const routeInterceptorPath = generatedDirectory + '/route-interceptor.ts';
 
 type Import = {
     path: string;
@@ -21,7 +21,7 @@ export function generateEverything(crispName: ReturnType<typeof getControllersAn
 
 async function generateModelFile(model: Model) {
     // model with references to other models
-    const template = Handlebars.compile(readFileSync('src/Model.hbs').toString());
+    const template = Handlebars.compile(readFileSync('src/codegen/model.hbs').toString());
     const content = template({
         ...model,
         properties: model.properties.map(p => ({ ...p, isClassModel: isClassModel(p.model)})),
@@ -33,7 +33,7 @@ async function generateModelFile(model: Model) {
 }
 
 function generateControllerPathsFile(routeControllers: Controller[]) {
-    const template = Handlebars.compile(readFileSync('src/RouteInterceptor.hbs').toString());
+    const template = Handlebars.compile(readFileSync('src/codegen/route-interceptor.hbs').toString());
     const content = template({
         controllers: routeControllers,
         imports: routeControllers.map(x => x.methods.map(m => m.returnModel)).flat().map(p => createModelModuleImport('./models', p))

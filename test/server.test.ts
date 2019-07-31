@@ -1,7 +1,7 @@
 import request from "supertest";
 import { AppModule } from "./samples/app";
 import { Test } from '@nestjs/testing';
-import { RouteInterceptor } from "./generated/RouteInterceptor";
+import { RouteInterceptor } from "./generated/route-interceptor";
 import { INestApplication } from "@nestjs/common";
 
 describe("generated interceptor", () => {

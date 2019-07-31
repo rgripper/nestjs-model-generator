@@ -1,5 +1,5 @@
-import { Company, Address, CountryCode, Question } from "./testModel";
-import { RecursiveModel } from "./testRecursiveModel";
+import { Company, Address, CountryCode, Question } from "./test-model";
+import { RecursiveModel } from "./test-recursive-model";
 import { Controller, Get } from "@nestjs/common";
 
 

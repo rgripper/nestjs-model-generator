@@ -1,11 +1,9 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-{{#each imports}}
-import { {{name}} } from '{{path}}';
-{{/each}}
+import { Question } from './models/Question';
 
-type RouteControllers = {
+type Controllers = {
   [name: string]: { 
     [name: string]: {
       returnType: any;
@@ -13,16 +11,12 @@ type RouteControllers = {
   }
 }
 
-const controllers: RouteControllers = {
-    {{#each controllers}}
-    {{name}}: {
-        {{#each methods}}
-        {{name}}: {
-            returnType: {{returnModel.name}}
+const controllers: Controllers = {
+    QuestionController: {
+        getAddress: {
+            returnType: Question
         },
-        {{/each}}
     },
-    {{/each}}
 }
 
 @Injectable()

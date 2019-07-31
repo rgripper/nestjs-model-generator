@@ -1,6 +1,6 @@
 import { Project, SourceFile, ClassDeclaration } from 'ts-morph';
-import { createModelGraph } from './ModelGraph';
-import { Model, GetModelFromNode } from './Model';
+import { createModelGraph } from './model-graph'
+import { Model, GetModelFromNode } from './model'
 
 const modelGraph = createModelGraph();
 

@@ -1,4 +1,4 @@
-import { Type, TypeFormatFlags, ts } from "ts-morph";
+import { Type, TypeFormatFlags } from "ts-morph";
 import crypto from 'crypto';
 const hash = crypto.createHash('sha256');
 

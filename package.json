@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "generate": "ts-node src/index.ts",
-    "start": "yarn ts-node test/main.ts",
+    "start": "ts-node test/main.ts",
     "test": "jest",
+    "cov": "jest --coverage",
     "ts-jest": "ts-jest",
     "ts-node": "ts-node"
   },
@@ -22,6 +23,9 @@
     "@nestjs/testing": "^6.5.3",
     "@types/jest": "^24.0.15",
     "@types/supertest": "^2.0.8",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "eslint": "^6.1.0",
     "jest": "^24.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
