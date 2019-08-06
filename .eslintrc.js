@@ -15,7 +15,7 @@ module.exports =  {
       '@typescript-eslint/explicit-function-return-type': 'off',
       //'@typescript-eslint/no-floating-promises': 'error',
       'prefer-const': 'error',
-      "triple-equals": 'error'
+      //"triple-equals": 'error'
       // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
       // e.g. "@typescript-eslint/explicit-function-return-type": "off",
     },

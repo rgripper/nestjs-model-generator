@@ -1,74 +1,36 @@
-import { Controller, getControllersAndModels } from "../analyzer/project-helper";
 import Handlebars from 'handlebars';
-import { writeFileSync, mkdirSync, readFileSync } from "fs";
-import { Model } from "../analyzer/model";
+import { writeFileSync, mkdirSync } from "fs";
+import rimraf from 'rimraf';
+import { ModelSource, createModelSource, createImport } from "./model-source";
+import { CodegenSettings } from "..";
+import { Controller, getControllersAndModels } from "../analyzer/project-helper";
+import { Model } from '../analyzer/model';
+import path from 'path';
 
-const generatedDirectory = 'test/generated';
+export function generateAllFiles(codegenSettings: CodegenSettings) {
+    rimraf.sync(codegenSettings.modelsDir);
+    mkdirSync(codegenSettings.modelsDir, { recursive: true });
 
-const modelsDir = generatedDirectory + '/models';
-const routeInterceptorPath = generatedDirectory + '/route-interceptor.ts';
-
-type Import = {
-    path: string;
-    name: string;
+    const controllersAndModels = getControllersAndModels(codegenSettings.inputFilesGlob);
+    generateModelFiles(codegenSettings, controllersAndModels.models);
+    generateRouteInterceptorFile(codegenSettings, controllersAndModels.controllers);
 }
 
-export function generateEverything(crispName: ReturnType<typeof getControllersAndModels>) {
-    crispName.models.filter(isClassModel).forEach(generateModelFile);
-    generateControllerPathsFile(crispName.controllers);
+function generateModelFiles(codegenSettings: CodegenSettings, models: Model[]) {
+    const template = Handlebars.compile(codegenSettings.modelTemplate);
+    const getModelPath = (model: Model) => path.join(codegenSettings.modelsDir, model.name + '.ts');
+    const generateModelFile = (modelSource: ModelSource) => writeFileSync(getModelPath(modelSource.model), template(modelSource));
+    models.filter(m => m.isCustom).map(createModelSource).forEach(generateModelFile);
 }
 
-
-async function generateModelFile(model: Model) {
-    // model with references to other models
-    const template = Handlebars.compile(readFileSync('src/codegen/model.hbs').toString());
-    const content = template({
-        ...model,
-        properties: model.properties.map(p => ({ ...p, isClassModel: isClassModel(p.model)})),
-        imports: createImports('.', model)
-    });
-
-    mkdirSync(modelsDir, { recursive: true });
-    writeFileSync(modelsDir + '/' + model.name + '.ts', content);
-}
-
-function generateControllerPathsFile(routeControllers: Controller[]) {
-    const template = Handlebars.compile(readFileSync('src/codegen/route-interceptor.hbs').toString());
+function generateRouteInterceptorFile(codegenSettings: CodegenSettings, routeControllers: Controller[]) {
+    const template = Handlebars.compile(codegenSettings.routeInterceptorTemplate);
     const content = template({
         controllers: routeControllers,
-        imports: routeControllers.map(x => x.methods.map(m => m.returnModel)).flat().map(p => createModelModuleImport('./models', p))
+        imports: routeControllers.map(x => x.methods.map(m => m.returnModel)).flat().map(p => createImport(codegenSettings.routeInterceptorPath, codegenSettings.modelsDir, p))
     });
 
-    mkdirSync(modelsDir, { recursive: true });
-    writeFileSync(routeInterceptorPath, content);
+    writeFileSync(codegenSettings.routeInterceptorPath, content);
 }
 
-function createModelModuleImport(basePath: string, model: Model): Import {
-    return {
-        path: basePath + `/${model.name}`,
-        name: model.name
-    };
-}
-
-function isClassModel(model: Model) {
-    return model.type.isEnum() || (model.type.isObject() && !model.type.isArray());
-}
-
-function createImports(basePath: string, model: Model): Import[] {
-    const models: Import[] = [];
-    if (model.arrayElementModel) {
-        models.push(createModelModuleImport(basePath, model.arrayElementModel)) 
-    }
-
-    const unwrapIfArray = (model: Model): Model => model.arrayElementModel ? unwrapIfArray(model.arrayElementModel) : model;
-    const propModels = model.properties.map(x => x.model);
-    if (model.arrayElementModel) {
-        propModels.push(model.arrayElementModel);
-    }
-
-    const imports = propModels.map(unwrapIfArray).filter(isClassModel).map(p => createModelModuleImport(basePath, p)); // arrays!
-    console.log(model.name, propModels.map(unwrapIfArray).map(x => x.name), propModels.map(unwrapIfArray).map(x => x.arrayElementModel !== undefined));
-
-    return imports;
-}
 

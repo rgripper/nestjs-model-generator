@@ -4,6 +4,10 @@ import { isBuiltInType, getTypeName } from './type-helper';
 export type Model = {
     type: Type;
     name: string;
+    /**
+     * Is customizable and generated as a class.
+     */
+    isCustom: boolean;
     arrayElementModel: Model | undefined;
     properties: Property[];
 }
@@ -22,6 +26,7 @@ export function createModelFromNode(typeNode: Node, getModelFromNode: GetModelFr
     return {
         type,
         name: getTypeName(type),
+        isCustom: !isBuiltInType(type),
         properties: isBuiltInType(type) ? [] : type.getProperties().map(p => createProperty(p, getModelFromNode)),
         arrayElementModel: type.isArray() ? createArrayElementModel(type, getModelFromNode) : undefined
     }
@@ -45,7 +50,8 @@ function createArrayElementModel (type: Type, getModelFromNode: GetModelFromNode
 function createBuiltInModel(type: Type): Model {
     return { 
         type, 
-        name: type.getText(undefined, TypeFormatFlags.None), 
+        name: type.getText(undefined, TypeFormatFlags.None),
+        isCustom: false,
         properties: [], 
         arrayElementModel: undefined 
     }

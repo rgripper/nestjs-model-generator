@@ -1,15 +1,15 @@
 {{#each imports}}
-import { {{name}} } from '{{path}}';
+import { {{name}} } from '{{modulePath}}';
 {{/each}}
-export class {{name}} {
+export class {{model.name}} {
 
-{{#each properties}}
+{{#each model.properties}}
     public {{name}}!: {{model.name}};
 {{/each}}
 
-    public constructor(raw: {{name}}) {
-{{#each properties}}
-    {{#if isClassModel}}
+    public constructor(raw: {{model.name}}) {
+{{#each model.properties}}
+    {{#if isCustom}}
         this.{{name}} = new {{model.name}}(raw.{{name}});
     {{else}}
         this.{{name}} = raw.{{name}};
