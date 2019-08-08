@@ -2,7 +2,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 
 {{#each imports}}
-import { {{name}} } from '{{path}}';
+import { {{name}} } from '{{moduleName}}';
 {{/each}}
 
 type Controllers = {

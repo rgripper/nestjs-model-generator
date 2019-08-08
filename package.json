@@ -7,7 +7,8 @@
     "lint": "eslint --fix {src,test}/**/*.ts",
     "generate": "ts-node src/index.ts",
     "start": "ts-node test/main.ts",
-    "test": "jest",
+    "test": "jest src",
+    "test:feature": "jest test",
     "cov": "jest --coverage",
     "ts-jest": "ts-jest",
     "ts-node": "ts-node"

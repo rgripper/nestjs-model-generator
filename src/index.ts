@@ -15,8 +15,8 @@ const inputFilesGlob = "test/samples/*.ts";
 
 const codegenSettings = {
     inputFilesGlob,
-    modelsDir: path.join(generatedDirectory, 'models'),
-    routeInterceptorPath: path.join(generatedDirectory, 'route-interceptor.ts'),
+    modelsDir: path.posix.join(generatedDirectory, 'models'),
+    routeInterceptorPath: path.posix.join(generatedDirectory, 'route-interceptor.ts'),
     modelTemplate: readFileSync('src/codegen/model.hbs').toString(),
     routeInterceptorTemplate: readFileSync('src/codegen/route-interceptor.hbs').toString()
 }
