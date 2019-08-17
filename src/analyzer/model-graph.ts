@@ -1,8 +1,16 @@
-import { ts, Node } from 'ts-morph';
-import { Model, GetModelFromNode, createModelFromNode } from './model';
+import { ts, Node, Type, Symbol as SymbolWrapper } from 'ts-morph';
+import { Model, GetModelFromNode, createModelFromNode, createProperty, GetDecoratorsForProperty, createArrayElementModel } from './model';
 
-export function createModelGraph () {
-    return createModelGraphWithParams({ getKey, createValue: createModelFromNode });
+export function createModelGraph (getDecoratorsForProperty: GetDecoratorsForProperty) {
+    return createModelGraphWithParams({ 
+        getKey, 
+        createValue: (node: Node<ts.Node>, getModelFromNode: GetModelFromNode) =>
+            createModelFromNode(
+                node, 
+                (propertySymbol: SymbolWrapper) => createProperty(propertySymbol, getModelFromNode, getDecoratorsForProperty),
+                (type: Type) => createArrayElementModel(type, getModelFromNode)
+            )
+    });
 }
 
 type ModelGraphParams = { 

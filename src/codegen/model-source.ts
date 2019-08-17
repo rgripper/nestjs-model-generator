@@ -1,5 +1,4 @@
 import { Model } from "../analyzer/model";
-import path from 'path';
 
 export type ModelSource = {
     model: Model;
@@ -15,8 +14,8 @@ export function createModelSource(model: Model): ModelSource {
     return {
         model, 
         imports: getImportedModels(model).map<Import>(m => ({
-            moduleName: './' + model.name,
-            name: model.name
+            moduleName: './' + m.name,
+            name: m.name
         }))
     }
 }

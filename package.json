@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint --fix {src,test}/**/*.ts",
     "generate": "ts-node src/index.ts",
-    "start": "ts-node test/main.ts",
-    "test": "jest src",
+    "start": "ts-node test/main.ts --transpile-only",
+    "test": "jest src/analyzer --runInBand",
     "test:feature": "jest test",
     "cov": "jest --coverage",
     "ts-jest": "ts-jest",

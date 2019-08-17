@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './samples/app';
+import { AppModule } from './samples/src/app';
 import { RouteInterceptor } from './generated/route-interceptor';
 
 async function bootstrap() {

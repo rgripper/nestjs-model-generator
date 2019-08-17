@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "experimentalDecorators": true,
+      "strict": true,
+      "esModuleInterop": true,
+      "module": "commonjs",
+      "target": "es2016",
+      "lib": ["esnext"],
+      "sourceMap": false,
+      "isolatedModules": true
+    },
+    "include": [
+      "src/**/*"
+    ]
+}

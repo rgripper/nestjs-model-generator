@@ -11,7 +11,7 @@ export function generateAllFiles(codegenSettings: CodegenSettings) {
     rimraf.sync(codegenSettings.modelsDir);
     mkdirSync(codegenSettings.modelsDir, { recursive: true });
 
-    const controllersAndModels = getControllersAndModels(codegenSettings.inputFilesGlob);
+    const controllersAndModels = getControllersAndModels(codegenSettings.tsConfigFilePath);
     generateModelFiles(codegenSettings, controllersAndModels.models);
     generateRouteInterceptorFile(codegenSettings, controllersAndModels.controllers);
 }

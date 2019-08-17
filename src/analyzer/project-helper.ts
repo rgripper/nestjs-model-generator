@@ -2,7 +2,30 @@ import { Project, SourceFile, ClassDeclaration } from 'ts-morph';
 import { createModelGraph } from './model-graph'
 import { Model, GetModelFromNode } from './model'
 
-const modelGraph = createModelGraph();
+// TODO: move to a separate file
+// TODO: refactor template-friendly serialization
+const modelGraph = createModelGraph(({ model, isOptional, isNullable }) => {
+
+    const getDeepArrayElementModel = (model: Model): Model => model.arrayElementModel ? getDeepArrayElementModel(model.arrayElementModel) : model;
+    const deepArrayElementModel = getDeepArrayElementModel(model);
+
+    return [{ 
+        name: 'ApiModelProperty', 
+        params: [{ 
+            name: 'isArray',
+            value: model.arrayElementModel !== undefined 
+        }, {
+            name: 'required',
+            value: !isOptional
+        }, {
+            name: 'nullable',
+            value: isNullable
+        }, {
+            name: 'type',
+            value: deepArrayElementModel.isCustom ? deepArrayElementModel.name : undefined
+        }].filter(x => !!x.value) // removes params with default (falsy) values
+    }]
+});
 
 type Method = { 
     name: string;
@@ -14,10 +37,8 @@ export type Controller = {
     methods: Method[];
 }
 
-export function getControllersAndModels(glob: string) {
-    const project = new Project({});
-    
-    project.addExistingSourceFiles(glob);
+export function getControllersAndModels(tsConfigFilePath: string) {
+    const project = new Project({ tsConfigFilePath });
     
     const sourceFiles = project.getSourceFiles();
 

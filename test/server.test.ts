@@ -1,5 +1,5 @@
 import request from "supertest";
-import { AppModule } from "./samples/app";
+import { AppModule } from "./samples/src/app";
 import { Test } from '@nestjs/testing';
 import { RouteInterceptor } from "./generated/route-interceptor";
 import { INestApplication } from "@nestjs/common";

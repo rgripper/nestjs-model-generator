@@ -7,9 +7,12 @@
       "target": "es2016",
       "lib": ["esnext"],
       "outDir": "build",
-      "sourceMap": true
+      "sourceMap": false,
+      "isolatedModules": true
     },
     "include": [
       "src/**/*", "test/**/*"
-    ]
+    ],
+    "exclude": ["node_modules"],
+    "files": null
 }

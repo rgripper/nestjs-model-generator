@@ -3,7 +3,7 @@ import path from 'path';
 import { readFileSync } from "fs";
 
 export type CodegenSettings = {
-    inputFilesGlob: string;
+    tsConfigFilePath: string;
     modelsDir: string;
     routeInterceptorPath: string;
     modelTemplate: string;
@@ -11,14 +11,16 @@ export type CodegenSettings = {
 }
 
 const generatedDirectory = 'test/generated';
-const inputFilesGlob = "test/samples/*.ts";
+const tsConfigFilePath = "test/samples/tsconfig.json";
 
-const codegenSettings = {
-    inputFilesGlob,
+const codegenSettings: CodegenSettings = {
+    tsConfigFilePath,
     modelsDir: path.posix.join(generatedDirectory, 'models'),
     routeInterceptorPath: path.posix.join(generatedDirectory, 'route-interceptor.ts'),
     modelTemplate: readFileSync('src/codegen/model.hbs').toString(),
     routeInterceptorTemplate: readFileSync('src/codegen/route-interceptor.hbs').toString()
 }
 
+console.log('before generateAllFiles', new Date())
 generateAllFiles(codegenSettings);
+console.log('after generateAllFiles', new Date())

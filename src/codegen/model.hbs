@@ -1,12 +1,17 @@
+import { ApiModelProperty } from '@nestjs/swagger';
 {{#each imports}}
 import { {{name}} } from '{{moduleName}}';
 {{/each}}
+
 export class {{model.name}} {
 
 {{#each model.properties}}
-    public {{name}}!: {{model.name}};
-{{/each}}
+    {{#each decorators}}
+    @{{name}}({{#if params.length}}{ {{#each params}}{{name}}: {{value}}{{#unless @last}}, {{/unless}}{{/each}} }{{/if}})
+    {{/each}}
+    public {{name}}{{#if isOptional}}?{{/if}}: {{model.name}};
 
+{{/each}}
     public constructor(raw: {{model.name}}) {
 {{#each model.properties}}
     {{#if isCustom}}

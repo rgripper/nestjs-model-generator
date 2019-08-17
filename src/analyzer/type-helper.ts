@@ -1,9 +1,8 @@
-import { Type, TypeFormatFlags } from "ts-morph";
+import { Type, TypeFormatFlags, ts } from "ts-morph";
 import crypto from 'crypto';
-const hash = crypto.createHash('sha256');
 
-export function isBuiltInType(type: Type) {
-    return !type.isArray() && !type.getSymbol() && !type.getAliasSymbol();
+export function isBuiltInType(type: Type): boolean {
+    return type.isArray() || type.isLiteral() || type.isString() || type.isNumber() || type.isBoolean() || type.isNull() || type.isUnknown(); // TODO: temp until actual fix
 }
 
 export function getTypeName(type: Type) {
@@ -17,5 +16,6 @@ function isAnonymousType(type: Type) {
 }
 
 function getAnonymousTypeName(type: Type) {
+    const hash = crypto.createHash('sha256');
     return 'Anonynous_' + hash.update(type.getText(undefined, TypeFormatFlags.None)).digest('hex');
 }
