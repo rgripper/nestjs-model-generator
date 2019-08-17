@@ -20,7 +20,7 @@ export type Property = {
     model: Model;
 }
 
-type Param = { name: string; value: unknown; }
+type Param = { name: string; value: unknown }
 
 export type Decorator = {
     params: Param[];
