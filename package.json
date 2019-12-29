@@ -14,7 +14,7 @@
     "ts-node": "ts-node"
   },
   "dependencies": {
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.3.0",
     "rimraf": "^2.6.3",
     "ts-morph": "^3.1.3"
   },
